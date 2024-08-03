@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Names of all group members" />
+<meta name="author" content="Siddharth Lal" />
 
 
 <title>Final Project Basic Outline</title>
@@ -1512,7 +1512,7 @@ window.initializeCodeFolding = function(show) {
     $(this).detach().appendTo(div);
 
     // add a show code button right above
-    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Code') + '</span>');
+    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Show') + '</span>');
     var showCodeButton = $('<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm code-folding-btn pull-right float-right"></button>');
     showCodeButton.append(showCodeText);
     showCodeButton
@@ -1538,7 +1538,7 @@ window.initializeCodeFolding = function(show) {
     //   * Change text
     //   * add a class for intermediate states styling
     div.on('hide.bs.collapse', function () {
-      showCodeText.text('Code');
+      showCodeText.text('Show');
       showCodeButton.addClass('btn-collapsing');
     });
     div.on('hidden.bs.collapse', function () {
@@ -1748,7 +1748,7 @@ display: none;
 
 
 <h1 class="title toc-ignore">Final Project Basic Outline</h1>
-<h4 class="author">Names of all group members</h4>
+<h4 class="author">Siddharth Lal</h4>
 
 </div>
 
@@ -1760,19 +1760,27 @@ your project.</p>
 <div id="research-question" class="section level2">
 <h2>Research Question</h2>
 <p>State your general specific question and why it is interesting.</p>
+<p>How do different product categories affect sales performance in large
+retail stores (Walmart and Big Mart)?</p>
 </div>
 <div id="data-processing" class="section level2">
 <h2>Data Processing</h2>
 <div id="data-intake" class="section level4">
 <h4>Data Intake</h4>
-<p>Include R code and written explanation to import your
-<strong>TWO</strong> data sets.</p>
 </div>
+</div>
+<div id="r-code-and-a-written-explanation-to-import-your-two-data-sets." class="section level1">
+<h1>R code and a written explanation to import your <strong>TWO</strong>
+data sets.</h1>
+<p>library(dplyr) library(ggplot2)</p>
+<p>retail_sales_dataset &lt;- read.csv(“retail_sales_dataset.csv”)
+walmart_sales_data &lt;- read.csv(“Walmart_Sales_Data.csv”)
+head(retail_sales_dataset) head(walmart_sales_data)
+#summary(retail_sales_dataset) #summary(walmart_data)</p>
 <div id="data-wrangling" class="section level4">
 <h4>Data Wrangling</h4>
 <p>Include R code and written explanation for wangling your data (you
 can make multiple wrangled data sets).</p>
-</div>
 </div>
 <div id="data-visualization" class="section level2">
 <h2>Data Visualization</h2>
@@ -1787,8 +1795,9 @@ than one).</p>
 you created.</p>
 <!-- rnb-text-end -->
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRmluYWwgUHJvamVjdCBCYXNpYyBPdXRsaW5lIgphdXRob3I6ICJOYW1lcyBvZiBhbGwgZ3JvdXAgbWVtYmVycyIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKVGhpcyBpcyBhbiBvdXRsaW5lIGZvciB5b3VyIGZpbmFsIHByb2plY3QuIFlvdSBjYW4gZm9sbG93IHRoaXMgb3V0bGluZSwgb3IgeW91IGNhbiBtb2RpZnkgaXQgYXMgeW91IHNlZSBmaXQuIERvIHdoYXQgd29ya3MgYmVzdCBmb3IgeW91ciBwcm9qZWN0LiAKCiMjIFJlc2VhcmNoIFF1ZXN0aW9uIAoKU3RhdGUgeW91ciBnZW5lcmFsIHNwZWNpZmljIHF1ZXN0aW9uIGFuZCB3aHkgaXQgaXMgaW50ZXJlc3RpbmcuIAoKCgojIyBEYXRhIFByb2Nlc3NpbmcgCgojIyMjIERhdGEgSW50YWtlIAoKSW5jbHVkZSBSIGNvZGUgYW5kIHdyaXR0ZW4gZXhwbGFuYXRpb24gdG8gaW1wb3J0IHlvdXIgKipUV08qKiBkYXRhIHNldHMuCgojIyMjIERhdGEgV3JhbmdsaW5nIAoKSW5jbHVkZSBSIGNvZGUgYW5kIHdyaXR0ZW4gZXhwbGFuYXRpb24gZm9yIHdhbmdsaW5nIHlvdXIgZGF0YSAoeW91IGNhbiBtYWtlIG11bHRpcGxlIHdyYW5nbGVkIGRhdGEgc2V0cykuIAoKCgoKIyMgRGF0YSBWaXN1YWxpemF0aW9uCgpJbmNsdWRlIFIgY29kZSBhbmQgd3JpdHRlbiBleHBsYW5hdGlvbiBmb3IgeW91ciBkYXRhIHZpc3VhbGl6YXRpb24ocykgd2l0aCBhdCBsZWFzdCAzIHZhcmlhYmxlcy4gWW91IG11c3QgaGF2ZSAqKmF0IGxlYXN0Kiogb25lIGdyYXBoLiBZb3UgbWF5IGhhdmUgbW9yZSB0aGFuIG9uZSAoSSB3b3VsZCBlbmNvdXJhZ2UgeW91IHRvIGhhdmUgbW9yZSB0aGFuIG9uZSkuIAoKCgoKIyMgQ29uY2x1c2lvbgoKQW5zd2VyIHlvdXIgcmVzZWFyY2ggcXVlc3Rpb24gdXNpbmcgdGhlIGRhdGEgc2V0cyBhbmQgdmlzdWFsaXphdGlvbnMgeW91IGNyZWF0ZWQuIA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkZpbmFsIFByb2plY3QgQmFzaWMgT3V0bGluZSINCmF1dGhvcjogIlNpZGRoYXJ0aCBMYWwiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIG91dGxpbmUgZm9yIHlvdXIgZmluYWwgcHJvamVjdC4gWW91IGNhbiBmb2xsb3cgdGhpcyBvdXRsaW5lLCBvciB5b3UgY2FuIG1vZGlmeSBpdCBhcyB5b3Ugc2VlIGZpdC4gRG8gd2hhdCB3b3JrcyBiZXN0IGZvciB5b3VyIHByb2plY3QuIA0KDQojIyBSZXNlYXJjaCBRdWVzdGlvbiANCg0KU3RhdGUgeW91ciBnZW5lcmFsIHNwZWNpZmljIHF1ZXN0aW9uIGFuZCB3aHkgaXQgaXMgaW50ZXJlc3RpbmcuIA0KDQpIb3cgZG8gZGlmZmVyZW50IHByb2R1Y3QgY2F0ZWdvcmllcyBhZmZlY3Qgc2FsZXMgcGVyZm9ybWFuY2UgaW4gbGFyZ2UgcmV0YWlsIHN0b3JlcyAoV2FsbWFydCBhbmQgQmlnIE1hcnQpPw0KDQoNCg0KIyMgRGF0YSBQcm9jZXNzaW5nIA0KDQojIyMjIERhdGEgSW50YWtlIA0KDQojIFIgY29kZSBhbmQgYSB3cml0dGVuIGV4cGxhbmF0aW9uIHRvIGltcG9ydCB5b3VyICoqVFdPKiogZGF0YSBzZXRzLg0KbGlicmFyeShkcGx5cikNCmxpYnJhcnkoZ2dwbG90MikNCg0KcmV0YWlsX3NhbGVzX2RhdGFzZXQgPC0gcmVhZC5jc3YoInJldGFpbF9zYWxlc19kYXRhc2V0LmNzdiIpDQp3YWxtYXJ0X3NhbGVzX2RhdGEgPC0gcmVhZC5jc3YoIldhbG1hcnRfU2FsZXNfRGF0YS5jc3YiKQ0KaGVhZChyZXRhaWxfc2FsZXNfZGF0YXNldCkNCmhlYWQod2FsbWFydF9zYWxlc19kYXRhKQ0KI3N1bW1hcnkocmV0YWlsX3NhbGVzX2RhdGFzZXQpDQojc3VtbWFyeSh3YWxtYXJ0X2RhdGEpDQoNCg0KIyMjIyBEYXRhIFdyYW5nbGluZyANCg0KSW5jbHVkZSBSIGNvZGUgYW5kIHdyaXR0ZW4gZXhwbGFuYXRpb24gZm9yIHdhbmdsaW5nIHlvdXIgZGF0YSAoeW91IGNhbiBtYWtlIG11bHRpcGxlIHdyYW5nbGVkIGRhdGEgc2V0cykuIA0KDQoNCg0KIyMgRGF0YSBWaXN1YWxpemF0aW9uDQoNCkluY2x1ZGUgUiBjb2RlIGFuZCB3cml0dGVuIGV4cGxhbmF0aW9uIGZvciB5b3VyIGRhdGEgdmlzdWFsaXphdGlvbihzKSB3aXRoIGF0IGxlYXN0IDMgdmFyaWFibGVzLiBZb3UgbXVzdCBoYXZlICoqYXQgbGVhc3QqKiBvbmUgZ3JhcGguIFlvdSBtYXkgaGF2ZSBtb3JlIHRoYW4gb25lIChJIHdvdWxkIGVuY291cmFnZSB5b3UgdG8gaGF2ZSBtb3JlIHRoYW4gb25lKS4gDQoNCiMjIENvbmNsdXNpb24NCg0KQW5zd2VyIHlvdXIgcmVzZWFyY2ggcXVlc3Rpb24gdXNpbmcgdGhlIGRhdGEgc2V0cyBhbmQgdmlzdWFsaXphdGlvbnMgeW91IGNyZWF0ZWQuIA0K</div>
 
 
 
