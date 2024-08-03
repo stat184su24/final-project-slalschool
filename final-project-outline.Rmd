@@ -32,14 +32,35 @@ head(walmart_sales_data)
 
 #### Data Wrangling 
 
-Include R code and written explanation for wangling your data (you can make multiple wrangled data sets). 
+#Include R code and written explanation for wangling your data (you can make multiple wrangled data sets). 
+
+str(retail_sales_dataset)
+str(walmart_sales_data)
+
+colnames(retail_sales_dataset) <- c("TransactionID", "Date", "CustomerID", "Gender", "Age", "ProductCategory", "Quantity", "PricePerUnit", "TotalAmount")
+colnames(walmart_sales_data) <- c("Store", "Date", "WeeklySales", "HolidayFlag", "Temperature", "FuelPrice", "CPI", "Unemployment")
+
+retail_sales_dataset <- retail_sales_dataset %>% drop_na()
+walmart_sales_data <- walmart_sales_data %>% drop_na()
+
+category_sales <- retail_sales_dataset %>% 
+  group_by(ProductCategory) %>% 
+  summarise(TotalSales = sum(TotalAmount))
+
+head(category_sales)
 
 
 
 ## Data Visualization
 
-Include R code and written explanation for your data visualization(s) with at least 3 variables. You must have **at least** one graph. You may have more than one (I would encourage you to have more than one). 
+#Include R code and written explanation for your data visualization(s) with at least 3 variables. You must have **at least** one graph. You may have more than one (I would encourage you to have more than one). 
+
+ggplot(category_sales, aes(x = ProductCategory, y = TotalSales)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Total Sales by Product Category", x = "Product Category", y = "Total Sales")
 
 ## Conclusion
 
 Answer your research question using the data sets and visualizations you created. 
+
