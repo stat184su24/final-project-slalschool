@@ -1,66 +1,228 @@
 ---
-title: "Final Project Basic Outline"
+title: "Final Project STAT 184"
 author: "Siddharth Lal"
 output: html_notebook
 ---
 
-This is an outline for your final project. You can follow this outline, or you can modify it as you see fit. Do what works best for your project. 
+### Research Question 
 
-## Research Question 
+How do seasonal changes and temperature variations impact sales in the retail sector, particularly focusing on different product categories?
 
-State your general specific question and why it is interesting. 
+Understanding how sales fluctuate throughout the year is crucial for retailers to optimize inventory, marketing strategies, and staffing. This analysis will help identify seasonal trends and patterns that can influence retail business decisions.
 
-How do different product categories affect sales performance in large retail stores (Walmart and Big Mart)?
+### Data Processing 
 
+**Dataset Descriptions**
 
+Retail Sales Dataset
+This synthetic dataset simulates a dynamic retail environment, capturing essential attributes such as Transaction ID, Date, Customer ID, Gender, Age, Product Category, Quantity, Price per Unit, and Total Amount. The data is fictional but mirrors real-world retail scenarios, enabling a broad exploration of sales trends, demographic influences, and purchasing behaviors.
 
-## Data Processing 
+**Walmart Sales Dataset**
+The Walmart sales dataset includes sales data from 45 stores in the United States, covering the period from February 5, 2010, to November 1, 2012. The data includes weekly sales volume, holiday status, temperature, fuel price, consumer price index (CPI), and unemployment rate.
+
+Both datasets offer a comprehensive view of sales performance, allowing us to explore various factors that influence retail sales and customer behavior."
+
 
 #### Data Intake 
 
 # R code and a written explanation to import your **TWO** data sets.
-library(dplyr)
-library(ggplot2)
 
+```{r}
+#load libraries
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+```
+
+```{r}
+# Read the CSV files and display head and summary to ensure they have loaded properly
 retail_sales_dataset <- read.csv("retail_sales_dataset.csv")
 walmart_sales_data <- read.csv("Walmart_Sales_Data.csv")
-head(retail_sales_dataset)
-head(walmart_sales_data)
-#summary(retail_sales_dataset)
-#summary(walmart_data)
 
-
-#### Data Wrangling 
-
-#Include R code and written explanation for wangling your data (you can make multiple wrangled data sets). 
-
+# Display the first few rows of each dataset
 str(retail_sales_dataset)
 str(walmart_sales_data)
 
-colnames(retail_sales_dataset) <- c("TransactionID", "Date", "CustomerID", "Gender", "Age", "ProductCategory", "Quantity", "PricePerUnit", "TotalAmount")
-colnames(walmart_sales_data) <- c("Store", "Date", "WeeklySales", "HolidayFlag", "Temperature", "FuelPrice", "CPI", "Unemployment")
+# Summarize each dataset
+summary(retail_sales_dataset)
+summary(walmart_sales_data)
+```
 
-retail_sales_dataset <- retail_sales_dataset %>% drop_na()
-walmart_sales_data <- walmart_sales_data %>% drop_na()
 
-category_sales <- retail_sales_dataset %>% 
-  group_by(ProductCategory) %>% 
-  summarise(TotalSales = sum(TotalAmount))
+#### Data Wrangling 
+```{r}
+# Ensure the Date columns are in Date format
+retail_sales_dataset$Date <- as.Date(retail_sales_dataset$Date, format="%Y-%m-%d")
 
-head(category_sales)
+# Convert Walmart sales dataset Date column to "%Y-%m-%d" format
+walmart_sales_data$Date <- as.Date(walmart_sales_data$Date, format="%d-%m-%Y")
+
+# Display the structure of the datasets
+str(retail_sales_dataset)
+str(walmart_sales_data)
+
+# Check the converted date formats
+head(retail_sales_dataset$Date)
+head(walmart_sales_data$Date)
+
+retail_sales_dataset$Date <- as.Date(retail_sales_dataset$Date, format="%Y-%m-%d")
+walmart_sales_data$Date <- as.Date(walmart_sales_data$Date, format="%d-%m-%Y")
+retail_sales_dataset$Date <- as.Date(retail_sales_dataset$Date, format="%Y-%m-%d")
+
+# Split the dataset by product category
+categories <- unique(retail_sales_dataset$Product.Category)
+category_datasets <- split(retail_sales_dataset, retail_sales_dataset$Product.Category)
+
+# Function to aggregate sales data by month for a given category
+aggregate_sales_by_month <- function(data) {
+  data %>%
+    mutate(Month = floor_date(Date, "month")) %>%
+    group_by(Month, Product.Category) %>%
+    summarise(Average_Sales = mean(Total.Amount))
+}
+
+# Aggregate sales data by month for each category
+category_sales_monthly <- lapply(category_datasets, aggregate_sales_by_month)
+
+# Combine the aggregated data into a single data frame
+combined_sales_monthly <- bind_rows(category_sales_monthly)
+```
+
+```{r}
+##DATA WRANGLING FOR THE CLOTHING AND TEMPERATURE GRAPH
+retail_sales_dataset$Date <- as.Date(retail_sales_dataset$Date, format="%Y-%m-%d")
+walmart_sales_data$Date <- as.Date(walmart_sales_data$Date, format="%d-%m-%Y")
+
+# Calculate the average temperature for each month in the Walmart dataset
+walmart_temp_monthly <- walmart_sales_data %>%
+  mutate(Month = month(Date, label = TRUE)) %>%
+  group_by(Month) %>%
+  summarise(Average_Temperature = mean(Temperature, na.rm = TRUE))
+
+walmart_temp_monthly$Month <- factor(walmart_temp_monthly$Month, levels = month.abb)
+
+# Extract month from the retail sales dataset
+retail_sales_with_temp <- retail_sales_dataset %>%
+  mutate(Month = month(Date, label = TRUE)) %>%
+  left_join(walmart_temp_monthly, by = "Month")
+
+# Ensure Month is ordered
+retail_sales_with_temp$Month <- factor(retail_sales_with_temp$Month, levels = month.abb)
+
+# Filter the retail sales dataset for clothing sales
+clothing_sales <- retail_sales_with_temp %>%
+  filter(Product.Category == "Clothing")
+
+# Aggregate clothing sales by month and calculate the average sales and average temperature
+clothing_sales_monthly <- clothing_sales %>%
+  group_by(Month) %>%
+  summarise(Average_Sales = mean(Total.Amount), Average_Temperature = mean(Average_Temperature))
+```
+
+
+
 
 
 
 ## Data Visualization
 
-#Include R code and written explanation for your data visualization(s) with at least 3 variables. You must have **at least** one graph. You may have more than one (I would encourage you to have more than one). 
+```{r}
+# Aggregate sales data by month and calculate average sales per month for retail sales
+retail_sales_monthly <- retail_sales_dataset %>%
+  mutate(Month = floor_date(Date, "month")) %>%
+  group_by(Month) %>%
+  summarise(Average_Sales = mean(Total.Amount))
 
-ggplot(category_sales, aes(x = ProductCategory, y = TotalSales)) +
-  geom_bar(stat = "identity") +
+# Aggregate sales data by month and calculate average sales per month for Walmart sales
+walmart_sales_monthly <- walmart_sales_data %>%
+  mutate(Month = floor_date(Date, "month")) %>%
+  group_by(Month) %>%
+  summarise(Average_Sales = mean(Weekly_Sales))
+
+# Create the ggplot2 graph for retail sales
+plot_retail <- ggplot(retail_sales_monthly, aes(x = Month, y = Average_Sales)) +
+  geom_line(color = 'blue') +
+  scale_x_date(labels = date_format("%b"), breaks = date_breaks("1 month")) +
+  scale_y_continuous(labels = dollar) +
+  labs(title = "Average Sales by Month (Retail Sales)",
+       subtitle = "The chart shows average sales per month",
+       x = "Month",
+       y = "Average Sales (in $)") +
   theme_minimal() +
-  labs(title = "Total Sales by Product Category", x = "Product Category", y = "Total Sales")
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        plot.subtitle = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Create the ggplot2 graph for Walmart sales
+plot_walmart <- ggplot(walmart_sales_monthly, aes(x = Month, y = Average_Sales)) +
+  geom_line(color = 'red') +
+  scale_x_date(labels = date_format("%b"), breaks = date_breaks("1 month")) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Average Sales by Month (Walmart Sales)",
+       subtitle = "The chart shows average sales per month",
+       x = "Month",
+       y = "Average Sales (in $)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        plot.subtitle = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Display the plots
+print(plot_retail)
+print(plot_walmart)
+```
+
+```{r}
+# Create the ggplot2 graph for each category
+plot_category_sales <- ggplot(combined_sales_monthly, aes(x = Month, y = Average_Sales, color = Product.Category)) +
+  geom_line() +
+  scale_x_date(labels = date_format("%b"), breaks = date_breaks("1 month")) +
+  scale_y_continuous(labels = dollar) +
+  labs(title = "Average Sales by Month for Each Product Category",
+       subtitle = "The chart shows average sales per month for each product category",
+       x = "Month",
+       y = "Average Sales (in $)",
+       color = "Product Category") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        plot.subtitle = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Display the plot
+print(plot_category_sales)
+```
+
+```{r}
+# Create the ggplot2 graph to show the relationship between temperature and clothing sales
+plot_clothing_sales_temp <- ggplot(clothing_sales_monthly, aes(x = Average_Temperature, y = Average_Sales)) +
+  geom_point(color = 'blue') +
+  geom_smooth(method = 'lm', color = 'red', se = FALSE) +
+  labs(title = "Relationship Between Temperature and Clothing Sales",
+       subtitle = "The chart shows average clothing sales per month against average temperature",
+       x = "Average Temperature (°F)",
+       y = "Average Clothing Sales (in $)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        plot.subtitle = element_text(size = 14))
+
+# Display the plot
+print(plot_clothing_sales_temp)
+```
 
 ## Conclusion
 
-Answer your research question using the data sets and visualizations you created. 
+Seasonal Trends: 
+Based on the first graph of Average Sales per month for the Walmart and Retail Sales datasets, it is obvious that there is a huge spike around the holiday season (starting around November to December). This makes sense as there are a variety of advertising campaigns during this time period and it is generally a time where people shop around and buy presents for themselves or their families. Retailers are aware of these trends and focus their campaigns around this time period. This trend is confirmed through both datasets which is why I wanted to use two datasets in order to confirm this trend as the Walmart dataset is significantly older. This means that these seasonal trends have been prevelant for at least a decade which creates confidence in this trend in retail sales.
+
+Average sales per month per category: 
+The second graph reveals an interesting trend: while there is a significant increase in sales for beauty products during the holiday season, electronic sales experience a sharp drop-off. Beauty products, such as cosmetics and skincare items, are popular gift choices during the holidays. They are often perceived as thoughtful and personal gifts, leading to increased sales in this category.
+There are probably a lot of promotions in this area as well. Meanwhile, electronic products see a sharp decline probably because a significant amount of people buy technology during Black Friday and Cyber Monday which lie in late November, causing the dropoff in December where people don't feel the need to do this anymore. 
+
+Temperature impact on clothing sales: 
+I extrapolated temperature data from the Walmart dataset to the months that corresponded to the retail sales dataset in order to see the potential impact on clothing sales. Because clothing sales in the second graph were the least impacted by the time of the year, I wanted to see if the temperature was instead a factor in the sale of the clothes. I plotted some points in order to see if there was a trend, and I found that there was a slight correlation between lower temperatures and higher sales in clothing. However, it is not something that can be a direct link as more data would be required and the way that I got my temperatures for this time period was not entirely accurate. However, it does make sense that in lower temperatures, people spend more money on warmer clothing while in warmer temperatures, special kinds of clothing as less required or necessary. 
+
+Conclusion: 
+In this research, I examined how seasonal changes and temperature variations impact retail sales across different product categories. This analysis revealed a consistent spike in sales during the holiday season (November to December) across both the synthetic retail sales data and historical Walmart sales data. Beauty products saw significant increases due to their popularity as gifts and promotional efforts, while electronics experienced a drop-off after major sales events like Black Friday and Cyber Monday. Additionally, I found a slight correlation between lower temperatures and higher clothing sales, suggesting that colder weather drives demand for warmer clothing. These findings highlight the importance for retailers to adjust marketing strategies, inventory levels, and promotions based on seasonal trends and temperature variations to optimize sales.
 
